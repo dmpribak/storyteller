@@ -1,0 +1,18 @@
+[project]
+name = "storyteller"
+version = "0.1.0"
+description = "A shared world of parallel, ending storylines, for Discord"
+readme = "README.md"
+license = "GPL-3.0-or-later"
+requires-python = ">=3.10"
+dependencies = ["discord.py>=2.0"]
+
+[project.scripts]
+storyteller = "bot:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+only-include = ["bot.py", "engine.py"]

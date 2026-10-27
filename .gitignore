@@ -1,0 +1,7 @@
+result
+.direnv/
+.venv/
+__pycache__/
+.env
+data/
+*.log

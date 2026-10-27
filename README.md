@@ -14,7 +14,8 @@ something unexpected, who to ping).
 | `test_migration.py` | Upgrades each save in `fixtures/` from the old format and plays on (`python test_migration.py`) |
 | `test_notify.py` | The ping rules (`python test_notify.py`) |
 | `fixtures/` | Real saves from the previous version (v1 separate threads, v2 one big story, v3 endless storylines), used by the migration tests |
-| `requirements.txt`, `.env.example` | Dependencies and config template |
+| `pyproject.toml`, `uv.lock` | Dependencies, managed with uv |
+| `flake.nix`, `modules/` | Nix package, dev shell, and NixOS service (`nixosModules.default`) |
 
 ## Set up the bot
 
@@ -23,14 +24,22 @@ something unexpected, who to ping).
 2. Open **OAuth2 > URL Generator**. Scopes: `bot` and `applications.commands`. Bot permissions:
    View Channels, Send Messages, Embed Links, Create Public Threads, Send Messages in Threads, Read Message History.
    Open the generated URL to invite the bot.
-3. Install and configure (Python 3.10+):
+3. Install and configure (Python 3.10+), with [uv](https://docs.astral.sh/uv/):
    ```
-   pip install -r requirements.txt
-   cp .env.example .env      # then paste your token into .env
-   python bot.py
+   uv sync
+   echo 'DISCORD_TOKEN=...' > .env
+   uv run bot.py
    ```
+   With Nix, `nix develop` (or direnv) gives a shell with uv set up, and `nix run` runs the bot directly.
    While developing, set `DEV_GUILD_ID` in `.env` to your test server's id so slash commands update instantly.
    Game data is saved as one JSON file per server in `data/` (change with `STORYBOT_DATA`).
+
+### On NixOS
+
+Add this flake as an input and import `storyteller.nixosModules.default`, then set
+`os.services.storyteller.enabled = true` and `os.services.storyteller.environmentFile` to a file
+containing `DISCORD_TOKEN=...` (keep it out of the Nix store, for example with agenix). The bot runs as
+the `storyteller` systemd service and keeps its saves in `/var/lib/private/storyteller`.
 
 ## Start a game
 
